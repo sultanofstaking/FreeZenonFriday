@@ -55,6 +55,25 @@
 				"type": "event"
 			},
 			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "Withdrawn",
+				"type": "event"
+			},
+			{
 				"inputs": [],
 				"name": "enter",
 				"outputs": [],
@@ -77,6 +96,19 @@
 			{
 				"inputs": [],
 				"name": "firstPrize",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getParticipantCount",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -186,6 +218,13 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "withdraw",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"stateMutability": "payable",
 				"type": "receive"
 			}
@@ -203,7 +242,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"FZF/FZFtest.sol": "FreeZenonFriday"
+			"FZF/FreeZenonFriday.sol": "FreeZenonFriday"
 		},
 		"evmVersion": "cancun",
 		"libraries": {},
@@ -217,12 +256,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"FZF/FZFtest.sol": {
-			"keccak256": "0x607fbf8c6a5c9dfeb68bbcd1ed9b699f44fbb0841fa5ed40ab900bcf342c9eaa",
+		"FZF/FreeZenonFriday.sol": {
+			"keccak256": "0x768528206da78b17fea58b53ae3916af5ba31e18acc6cb5bb9cc643602788bf6",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://99345295e82cdc3a3b8bfec672a7c6c44ee34cd8ed52837d61bcdc15f1b618a1",
-				"dweb:/ipfs/QmSLsMtftyeK8D2QZ4Rx9fCGRf4WQMYMHWGYrPUQTuSD4k"
+				"bzz-raw://262a9189b31bedcd2efd28ef5deabee038cedcb84ed53d1ee9979206bba40b26",
+				"dweb:/ipfs/QmfFDF6Pybt8HDNzkVTnxFq6iTuJyDVziVTZ1EyLwFqbHn"
 			]
 		}
 	},
