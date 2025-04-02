@@ -130,6 +130,17 @@
             color: #00FF8C;
         }
         
+        .setup h3 {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: #00FFFF;
+        }
+        
+        .setup strong {
+            color: #00FF8C;
+            font-weight: bold;
+        }
+        
         a {
             color: #00FFFF;
             text-decoration: none;
@@ -197,15 +208,26 @@
         
         <div class="section setup">
             <h2>First Time Setup</h2>
-            <div class="setup-info">Add Supernova to MetaMask: RPC https://rpc.novascan.io, Chain ID 73405</div>
-            <div class="setup-info">Get xZNN from <a href="https://bridge.mainnet.zenon.community/?referral=2f5b37021a357e21637d34610e750a1c253827317a34395a76181f2f243062787167027f42156f7e" target="_blank">Zenon Bridge</a></div>
+            <h3>1. Add Supernova Network to MetaMask</h3>
+            <div class="setup-info">Network Name: <strong>Zenon Supernova</strong></div>
+            <div class="setup-info">RPC URL: <strong>https://rpc.novascan.io</strong></div>
+            <div class="setup-info">Chain ID: <strong>73405</strong></div>
+            <div class="setup-info">Currency Symbol: <strong>xZNN</strong></div>
+            <div class="setup-info">Block Explorer: <strong>https://novascan.io</strong></div>
+            
+            <h3>2. Get xZNN for Gas</h3>
+            <div class="setup-info">You'll need a small amount of xZNN (~0.01) to pay for transaction gas</div>
+            <div class="setup-info">Get xZNN by using the <a href="https://bridge.mainnet.zenon.community/?referral=2f5b37021a357e21637d34610e750a1c253827317a34395a76181f2f243062787167027f42156f7e" target="_blank">Zenon Bridge</a> to transfer from Ethereum or BSC</div>
         </div>
         
         <footer>
             <p>Contract: 0xbF1d0383F67F454722441F7C9A4A6851D599D361 | <a href="https://zenon.network" target="_blank">Zenon Network</a> © 2025</p>
         </footer>
     </div>
-
+    
+    <!-- Minimal Web3 just for contract calls -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
+    
     <script>
         // DOM Elements
         const joinButton = document.getElementById('joinButton');
@@ -213,32 +235,111 @@
         const participantCount = document.getElementById('participantCount');
         const countdown = document.getElementById('countdown');
         
-        // Contract info
+        // Contract configuration
         const contractAddress = "0xbF1d0383F67F454722441F7C9A4A6851D599D361";
-        
-        // Simplified countdown
-        function updateCountdown() {
-            const drawTime = new Date("April 4, 2025 16:00:00 EDT").getTime();
-            const now = new Date().getTime();
-            const timeLeft = drawTime - now;
-            
-            if (timeLeft <= 0) {
-                countdown.textContent = "Draw in progress!";
-                return;
+        const abi = [
+            {
+                "inputs": [],
+                "name": "getParticipantCount",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "nextDrawTime",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "enter",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
             }
-            
-            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            
-            countdown.textContent = `${days}d ${hours}h ${minutes}m`;
+        ];
+        
+        // Global variables
+        let web3;
+        let contract;
+        let drawTimestamp = 1743796800; // April 4, 2025, 20:00 UTC (fallback)
+        
+        // Initialize
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Initialize web3 with provider if available
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                
+                try {
+                    // Initialize contract (minimal)
+                    contract = new web3.eth.Contract(abi, contractAddress);
+                    
+                    // Get draw timestamp
+                    try {
+                        drawTimestamp = await contract.methods.nextDrawTime().call();
+                    } catch (error) {
+                        console.error("Error getting draw time:", error);
+                    }
+                    
+                    // Initial participant count update
+                    updateParticipantCount();
+                    
+                    // Start updating countdown every second
+                    updateCountdown();
+                    setInterval(updateCountdown, 1000);
+                    
+                    // Update participant count every 30 seconds
+                    setInterval(updateParticipantCount, 30000);
+                    
+                } catch (error) {
+                    console.error("Contract initialization error:", error);
+                }
+            } else {
+                // Fallback for when web3 is not available
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+                participantCount.textContent = "4"; // Static fallback
+            }
+        });
+        
+        // Update participant count from contract
+        async function updateParticipantCount() {
+            try {
+                if (contract) {
+                    const count = await contract.methods.getParticipantCount().call();
+                    participantCount.textContent = count;
+                }
+            } catch (error) {
+                console.error("Error updating participant count:", error);
+                // Don't update the UI on error to keep the last valid value
+            }
         }
         
-        // Update countdown immediately and every minute
-        updateCountdown();
-        setInterval(updateCountdown, 60000);
+        // Update countdown timer with seconds precision
+        function updateCountdown() {
+            try {
+                const now = Math.floor(Date.now() / 1000);
+                const timeLeft = drawTimestamp - now;
+                
+                if (timeLeft <= 0) {
+                    countdown.textContent = "Draw is in progress!";
+                    return;
+                }
+                
+                const days = Math.floor(timeLeft / 86400);
+                const hours = Math.floor((timeLeft % 86400) / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+                
+                countdown.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            } catch (error) {
+                console.error("Error updating countdown:", error);
+            }
+        }
         
-        // Simplified join button
+        // Join button click handler
         joinButton.addEventListener('click', async () => {
             if (!window.ethereum) {
                 showStatus("Please install MetaMask to participate", "error");
@@ -259,22 +360,22 @@
                 
                 showStatus("Joining lottery...", "info");
                 
-                // Call enter function with raw transaction
-                const enterFunctionSignature = "0xe97dcb62"; // keccak256("enter()") first 4 bytes
+                // Initialize web3 and contract if needed
+                if (!web3) web3 = new Web3(window.ethereum);
+                if (!contract) contract = new web3.eth.Contract(abi, contractAddress);
                 
-                const result = await window.ethereum.request({
-                    method: "eth_sendTransaction",
-                    params: [{
-                        to: contractAddress,
-                        from: account,
-                        value: "0x0", // 0 ETH
-                        data: enterFunctionSignature
-                    }]
+                // Call enter function
+                await contract.methods.enter().send({
+                    from: account,
+                    value: "0"
                 });
                 
                 showStatus("You've joined the lottery! Good luck!", "success");
                 joinButton.textContent = "You've Joined!";
                 joinButton.disabled = true;
+                
+                // Update participant count after successful entry
+                updateParticipantCount();
                 
             } catch (error) {
                 console.error(error);
@@ -302,10 +403,6 @@
                 statusBox.style.border = "1px solid #00ffff";
             }
         }
-        
-        // Set a dummy participant count for now
-        // In production, you'd fetch this from the contract
-        participantCount.textContent = "1";
     </script>
 </body>
 </html>
