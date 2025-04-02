@@ -3,11 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>FreeZenonFriday Lottery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: block;
+            margin: 20px auto;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #status {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
     <h1>FreeZenonFriday Lottery</h1>
+    <div class="info">
+        <p>First draw: April 4, 4:00 PM EDT</p>
+        <p>Prizes: 2.1 xZNN (first prize) or 0.9 xZNN (second prize)</p>
+        <p>No entry fee, just gas (~0.01 xZNN)</p>
+    </div>
     <button id="joinButton">Join Now</button>
-    <p>First draw: April 4, 4:00 PM EDT. Prizes: 2.1 xZNN or 0.9 xZNN. No fee, just gas (~0.01 xZNN).</p>
     <p id="status"></p>
 
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
@@ -241,43 +283,113 @@
 
         const joinButton = document.getElementById("joinButton");
         const status = document.getElementById("status");
+        let contract;
 
-        joinButton.onclick = async () => {
+        window.addEventListener('load', async () => {
+            // Display participant count and other info if possible
+            if (window.ethereum) {
+                try {
+                    const web3 = new Web3(window.ethereum);
+                    contract = new web3.eth.Contract(abi, contractAddress);
+                    
+                    // Get participant count
+                    const count = await contract.methods.getParticipantCount().call();
+                    const isActive = await contract.methods.isActive().call();
+                    status.innerText = `Current participants: ${count}. Competition ${isActive ? 'is active' : 'not yet active'}.`;
+                } catch (error) {
+                    console.log("Initial load error:", error);
+                }
+            }
+        });
+
+        joinButton.addEventListener('click', async () => {
             let provider = window.ethereum;
             if (!provider) {
                 status.innerText = "Install MetaMask first! Get it at metamask.io.";
                 return;
             }
+            
             const web3 = new Web3(provider);
             try {
                 await provider.request({ method: "eth_requestAccounts" });
                 const accounts = await web3.eth.getAccounts();
                 const chainId = await web3.eth.getChainId();
                 console.log("Current Chain ID:", chainId);
+                
                 if (Number(chainId) !== 73405) {
-                    status.innerText = "Switch MetaMask to Supernova (Chain ID: 73405)!";
+                    status.innerText = "Please switch MetaMask to Supernova (Chain ID: 73405)!";
+                    
+                    // Optional: Try to add/switch to the Supernova network
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x11EAD' }], // 73405 in hex
+                        });
+                    } catch (switchError) {
+                        // This error code indicates that the chain has not been added to MetaMask
+                        if (switchError.code === 4902) {
+                            try {
+                                await window.ethereum.request({
+                                    method: 'wallet_addEthereumChain',
+                                    params: [
+                                        {
+                                            chainId: '0x11EAD',
+                                            chainName: 'Zenon Supernova',
+                                            nativeCurrency: {
+                                                name: 'Zenon',
+                                                symbol: 'xZNN',
+                                                decimals: 18,
+                                            },
+                                            rpcUrls: ['https://supernova.zenon.community'],
+                                            blockExplorerUrls: ['https://explorer.zenon.community'],
+                                        },
+                                    ],
+                                });
+                            } catch (addError) {
+                                console.error('Error adding Supernova network', addError);
+                            }
+                        }
+                        return;
+                    }
+                }
+
+                // Initialize contract
+                contract = new web3.eth.Contract(abi, contractAddress);
+                
+                // Check if competition is active
+                const isActive = await contract.methods.isActive().call();
+                if (!isActive) {
+                    status.innerText = "Competition is not active yet. Please try again later.";
                     return;
                 }
 
-                const contract = new web3.eth.Contract(abi, contractAddress);
-                console.log("Contract Loaded:", contract);
-                console.log("Available Methods:", Object.keys(contract.methods));
-
-                if (!contract.methods.enter) {
-                    status.innerText = "Error: 'enter' method not found in contract!";
-                    console.error("Contract Methods Available:", Object.keys(contract.methods));
+                // Check time
+                const nextDrawTime = await contract.methods.nextDrawTime().call();
+                const currentTime = Math.floor(Date.now() / 1000);
+                if (currentTime > nextDrawTime) {
+                    status.innerText = "Entry period has ended. Next draw coming soon!";
                     return;
                 }
 
                 status.innerText = "Joining lottery...";
-                await contract.methods.enter().send({ from: accounts[0], value: web3.utils.toWei("0", "ether") });
+                
+                // Call the enter method - note we access it directly from contract.methods
+                await contract.methods.enter().send({ 
+                    from: accounts[0], 
+                    value: web3.utils.toWei("0", "ether") 
+                });
 
-                status.innerText = "You're in! Draw’s April 4, 4 PM EDT.";
+                status.innerText = "You're in! Draw's April 4, 4 PM EDT.";
+                
+                // Update participant count
+                const count = await contract.methods.getParticipantCount().call();
+                status.innerText = `You're in! Draw on April 4, 4 PM EDT. Total participants: ${count}`;
+                
             } catch (error) {
                 console.error(error);
                 status.innerText = "Error: " + (error.message || "Something went wrong");
             }
-        };
+        });
     </script>
 </body>
 </html>
