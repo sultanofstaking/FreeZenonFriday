@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FreeZenonFriday Lottery</title>
+</head>
+<body>
+    <h1>FreeZenonFriday Lottery</h1>
+    <button id="joinButton">Join Now</button>
+    <p>First draw: April 4, 4:00 PM EDT. Prizes: 2.1 xZNN or 0.9 xZNN. No fee, just gas (~0.01 xZNN).</p>
+    <p id="status"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
+    <script>
+        const contractAddress = "0xbF1d0383F67F454722441F7C9A4A6851D599D361";
+        const abi = [ /* your ABI array here */ ];
+        const joinButton = document.getElementById("joinButton");
+        const status = document.getElementById("status");
+
+        joinButton.onclick = async () => {
+            let provider = window.ethereum;
+            if (!provider) {
+                if (window.web3 && window.web3.currentProvider) {
+                    provider = window.web3.currentProvider;
+                } else {
+                    status.innerText = "Install MetaMask first! Get it at metamask.io.";
+                    return;
+                }
+            }
+
+            const web3 = new Web3(provider);
+            try {
+                await provider.request({ method: "eth_requestAccounts" });
+                const accounts = await web3.eth.getAccounts();
+                const chainId = await web3.eth.getChainId();
+                if (Number(chainId) !== 73405) {
+                    status.innerText = "Switch MetaMask to Supernova (Chain ID: 73405)!";
+                    return;
+                }
+
+                const contract = new web3.eth.Contract(abi, contractAddress);
+                status.innerText = "Joining lottery...";
+                await contract.methods.enter().send({ from: accounts[0], value: 0 });
+                status.innerText = "You’re in! Draw’s April 4, 4 PM EDT.";
+            } catch (error) {
+                status.innerText = "Error: " + (error.message || "Something went wrong");
+            }
+        };
+    </script>
+</body>
+</html>
