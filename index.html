@@ -6,15 +6,23 @@
     <title>FreeZenonFriday Lottery</title>
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2ecc71;
-            --accent-color: #f39c12;
-            --dark-color: #2c3e50;
-            --light-color: #ecf0f1;
-            --danger-color: #e74c3c;
-            --text-color: #333333;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --zenon-primary: #00FF8C; /* Neon green */
+            --zenon-blue: #00FFFF;    /* Neon blue */
+            --zenon-pink: #FF00FF;    /* Neon pink */
+            --zenon-orange: #FF9500;  /* Neon orange */
+            --zenon-background: #0F0F0F;
+            --zenon-secondary: #1A1A1A;
+            --zenon-dark: #000000;
+            --zenon-light: #FFFFFF;
+            --zenon-error: #FF4444;
+            --zenon-success: #00FF88;
+            --zenon-warning: #FFAA44;
+            --border-radius: 6px;
+            --box-shadow: 0 4px 12px rgba(0, 255, 140, 0.15);
+            --gradient-1: linear-gradient(135deg, var(--zenon-primary) 0%, var(--zenon-blue) 100%);
+            --gradient-2: linear-gradient(135deg, var(--zenon-pink) 0%, var(--zenon-orange) 100%);
+            --gradient-3: linear-gradient(135deg, var(--zenon-primary) 0%, var(--zenon-pink) 100%);
+            --gradient-4: linear-gradient(135deg, var(--zenon-blue) 0%, var(--zenon-orange) 100%);
         }
         
         * {
@@ -24,62 +32,112 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--light-color);
+            color: var(--zenon-light);
+            background-color: var(--zenon-dark);
             padding: 20px;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogIDxkZWZzPgogICAgPHBhdHRlcm4gaWQ9InBhdHRlcm4iIHg9IjAiIHk9IjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgcGF0dGVyblRyYW5zZm9ybT0icm90YXRlKDQ1KSI+CiAgICAgIDxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSI0MCIgc3Ryb2tlPSIjMDkwOTA5IiBzdHJva2Utd2lkdGg9IjEiLz4KICAgIDwvcGF0dGVybj4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPgo8L3N2Zz4=');
         }
         
         .container {
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
-            background-color: white;
+            background-color: var(--zenon-secondary);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             padding: 30px;
+            border: 1px solid rgba(0, 255, 140, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-1);
         }
         
         header {
             text-align: center;
             margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 255, 140, 0.2);
+        }
+        
+        h1, h2, h3, h4 {
+            color: var(--zenon-primary);
+            font-weight: 600;
+            letter-spacing: 1px;
         }
         
         h1 {
-            color: var(--dark-color);
-            margin-bottom: 10px;
-            font-size: 2.5rem;
+            margin-bottom: 15px;
+            margin-top: 10px;
+            font-size: 3.5rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
         
         .subtitle {
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-        
-        .info-box {
-            background-color: var(--light-color);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 30px;
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .info-box h2 {
+            color: var(--zenon-pink);
+            font-size: 1.3rem;
             margin-bottom: 15px;
-            color: var(--dark-color);
+            opacity: 0.9;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(0, 255, 140, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--gradient-1);
+        }
+        
+        .section h2 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
         }
         
         .info-item {
             display: flex;
             align-items: center;
             margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
         
         .info-icon {
-            margin-right: 10px;
-            color: var(--primary-color);
-            font-weight: bold;
+            margin-right: 15px;
+            color: var(--zenon-primary);
+            font-size: 1.2rem;
         }
         
         .prize-box {
@@ -89,20 +147,34 @@
         }
         
         .prize-card {
-            background-color: var(--light-color);
+            background-color: rgba(0, 0, 0, 0.3);
             border-radius: var(--border-radius);
             padding: 20px;
             width: 48%;
             text-align: center;
-            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 140, 0.1);
         }
         
-        .prize-card.first {
-            border-top: 4px solid var(--secondary-color);
+        .prize-card:first-child::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
         }
         
-        .prize-card.second {
-            border-top: 4px solid var(--accent-color);
+        .prize-card:last-child::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-2);
         }
         
         .prize-amount {
@@ -111,12 +183,16 @@
             margin: 10px 0;
         }
         
-        .prize-card.first .prize-amount {
-            color: var(--secondary-color);
+        .prize-card:first-child .prize-amount {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
-        .prize-card.second .prize-amount {
-            color: var(--accent-color);
+        .prize-card:last-child .prize-amount {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .timer-box {
@@ -125,18 +201,20 @@
         }
         
         .countdown {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: bold;
-            color: var(--dark-color);
-            margin: 10px 0;
+            color: var(--zenon-primary);
+            margin: 15px 0;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 140, 0.5);
         }
         
         .button {
             display: block;
             width: 100%;
-            padding: 15px;
-            background-color: var(--primary-color);
-            color: white;
+            padding: 16px;
+            background: var(--gradient-1);
+            color: var(--zenon-dark);
             border: none;
             border-radius: var(--border-radius);
             font-size: 1.2rem;
@@ -145,15 +223,21 @@
             transition: all 0.3s ease;
             margin: 20px 0;
             text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 255, 140, 0.3);
         }
         
         .button:hover {
-            background-color: #2980b9;
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 140, 0.4);
+            background: var(--gradient-3);
         }
         
         .button:disabled {
-            background-color: #bdc3c7;
+            background: #1a1a1a;
+            color: #505050;
+            box-shadow: none;
             cursor: not-allowed;
             transform: none;
         }
@@ -168,23 +252,27 @@
         }
         
         .status-info {
-            background-color: #d6eaf8;
-            color: var(--primary-color);
+            background-color: rgba(0, 255, 255, 0.1);
+            color: var(--zenon-blue);
+            border: 1px solid var(--zenon-blue);
         }
         
         .status-success {
-            background-color: #d5f5e3;
-            color: var(--secondary-color);
+            background-color: rgba(0, 255, 140, 0.1);
+            color: var(--zenon-success);
+            border: 1px solid var(--zenon-success);
         }
         
         .status-error {
-            background-color: #fadbd8;
-            color: var(--danger-color);
+            background-color: rgba(255, 68, 68, 0.1);
+            color: var(--zenon-error);
+            border: 1px solid var(--zenon-error);
         }
         
         .status-waiting {
-            background-color: #fef9e7;
-            color: var(--accent-color);
+            background-color: rgba(255, 149, 0, 0.1);
+            color: var(--zenon-orange);
+            border: 1px solid var(--zenon-orange);
         }
         
         .status-hidden {
@@ -194,43 +282,166 @@
         .participants-box {
             text-align: center;
             margin: 20px 0;
-            padding: 15px;
-            background-color: var(--light-color);
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
             border-radius: var(--border-radius);
+            border: 1px solid rgba(0, 255, 140, 0.1);
         }
         
         .participants-count {
-            font-size: 1.5rem;
+            font-size: 2.2rem;
             font-weight: bold;
-            color: var(--primary-color);
-            margin: 10px 0;
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #7f8c8d;
-            font-size: 0.9rem;
+            background: var(--gradient-4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 15px 0;
         }
         
         .wallet-info {
             margin-top: 20px;
             padding: 15px;
-            background-color: var(--light-color);
+            background-color: rgba(0, 0, 0, 0.3);
             border-radius: var(--border-radius);
             text-align: center;
+            border: 1px solid rgba(0, 255, 140, 0.1);
         }
         
         .wallet-address {
             font-family: monospace;
-            background-color: white;
-            padding: 8px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
             border-radius: 4px;
-            margin-top: 5px;
+            margin-top: 10px;
             font-size: 0.9rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            border: 1px solid rgba(0, 255, 140, 0.1);
+        }
+        
+        .setup-steps {
+            margin: 20px 0;
+            padding: 0;
+            list-style-type: none;
+        }
+        
+        .setup-steps li {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            padding-left: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+        
+        .setup-steps li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--zenon-primary);
+            border-radius: 50%;
+        }
+        
+        .setup-steps li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .zenon-link {
+            color: var(--zenon-primary);
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border-bottom: 1px dotted var(--zenon-primary);
+        }
+        
+        .zenon-link:hover {
+            color: var(--zenon-pink);
+            border-bottom-color: var(--zenon-pink);
+        }
+        
+        .steps-container {
+            margin: 30px 0;
+        }
+        
+        .step-card {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 255, 140, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step-card:first-child::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--gradient-3);
+        }
+        
+        .step-card:last-child::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--gradient-4);
+        }
+        
+        .step-card h3 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: var(--gradient-1);
+            color: var(--zenon-dark);
+            border-radius: 50%;
+            margin-right: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .step-card:last-child .step-number {
+            background: var(--gradient-2);
+        }
+        
+        /* Setup button styles */
+        .setup-button {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: rgba(0, 255, 140, 0.1);
+            border: 1px solid var(--zenon-primary);
+            color: var(--zenon-primary);
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .setup-button:hover {
+            background-color: rgba(0, 255, 140, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 255, 140, 0.2);
+        }
+        
+        .setup-button i {
+            margin-right: 5px;
         }
         
         /* Loading spinner */
@@ -239,14 +450,88 @@
             width: 20px;
             height: 20px;
             margin-right: 10px;
-            border: 3px solid rgba(255,255,255,.3);
+            border: 3px solid rgba(0, 0, 0, 0.3);
             border-radius: 50%;
-            border-top-color: white;
+            border-top-color: var(--zenon-dark);
             animation: spin 1s ease-in-out infinite;
         }
         
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        
+        @keyframes neonPulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        /* Zenon branding - Ethereum-inspired with neon colors */
+        /* Header styles with no logo */
+        header {
+            position: relative;
+            padding-top: 10px;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            right: 25%;
+            height: 2px;
+            background: var(--gradient-4);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 255, 140, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+        
+        /* Custom divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+        }
+        
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, rgba(0, 255, 140, 0), rgba(0, 255, 140, 0.3), rgba(0, 255, 140, 0));
+        }
+        
+        .divider-icon {
+            padding: 0 15px;
+            color: var(--zenon-primary);
+            font-size: 1.2rem;
+        }
+        
+        /* Glow effects */
+        .glow {
+            text-shadow: 0 0 10px currentColor;
+            animation: neonPulse 2s infinite;
+        }
+        
+        /* Strong emphasis */
+        .highlight {
+            color: var(--zenon-primary);
+            font-weight: bold;
+        }
+        
+        /* Contract address style */
+        .contract-address {
+            font-family: monospace;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(0, 255, 140, 0.1);
         }
         
         @media (max-width: 600px) {
@@ -258,21 +543,25 @@
                 width: 100%;
                 margin-bottom: 15px;
             }
+            
+            .countdown {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>FreeZenonFriday</h1>
-            <p class="subtitle">Weekly Lottery</p>
+            <h1 class="glow">FreeZenonFriday</h1>
+            <p class="subtitle">Weekly Lottery on Zenon Network</p>
         </header>
         
-        <div class="info-box">
+        <div class="section">
             <h2>How It Works</h2>
             <div class="info-item">
                 <span class="info-icon">🎟️</span>
-                <span>Enter the lottery for free (just pay gas)</span>
+                <span>Enter the lottery for free (just pay gas ~0.01 xZNN)</span>
             </div>
             <div class="info-item">
                 <span class="info-icon">🕒</span>
@@ -289,26 +578,30 @@
         </div>
         
         <div class="prize-box">
-            <div class="prize-card first">
+            <div class="prize-card">
                 <h3>First Prize</h3>
-                <div class="prize-amount">2.1 xZNN</div>
+                <div class="prize-amount glow">2.1 xZNN</div>
                 <p>First randomly selected winner</p>
             </div>
-            <div class="prize-card second">
+            <div class="prize-card">
                 <h3>Second Prize</h3>
-                <div class="prize-amount">0.9 xZNN</div>
+                <div class="prize-amount glow">0.9 xZNN</div>
                 <p>Second randomly selected winner</p>
             </div>
         </div>
         
+        <div class="divider">
+            <span class="divider-icon">⏱️</span>
+        </div>
+        
         <div class="timer-box">
             <h3>Next Drawing</h3>
-            <div class="countdown" id="countdown">Loading...</div>
+            <div class="countdown glow" id="countdown">Loading...</div>
         </div>
         
         <div class="participants-box">
             <h3>Current Participants</h3>
-            <div class="participants-count" id="participantCount">-</div>
+            <div class="participants-count glow" id="participantCount">-</div>
         </div>
         
         <button class="button" id="joinButton">Join the Lottery</button>
@@ -320,9 +613,45 @@
             <div class="wallet-address" id="walletAddress"></div>
         </div>
         
+        <div class="divider">
+            <span class="divider-icon">🛠️</span>
+        </div>
+        
+        <div class="steps-container">
+            <h2>First Time Setup</h2>
+            
+            <div class="step-card">
+                <h3><span class="step-number">1</span>Add Supernova Network to MetaMask</h3>
+                <p>You need to add Zenon Supernova network to MetaMask to participate:</p>
+                <ul class="setup-steps">
+                    <li>Network Name: <strong class="highlight">Zenon Supernova</strong></li>
+                    <li>RPC URL: <strong class="highlight">https://rpc.novascan.io</strong></li>
+                    <li>Chain ID: <strong class="highlight">73405</strong></li>
+                    <li>Currency Symbol: <strong class="highlight">xZNN</strong></li>
+                    <li>Block Explorer: <strong class="highlight">https://novascan.io</strong></li>
+                </ul>
+                <button class="setup-button" id="addNetworkButton">
+                    <i>🔄</i> Add Supernova Network
+                </button>
+            </div>
+            
+            <div class="step-card">
+                <h3><span class="step-number">2</span>Get xZNN via the Bridge</h3>
+                <p>You'll need xZNN to pay for transaction gas fees:</p>
+                <ul class="setup-steps">
+                    <li>Visit the Zenon Bridge to transfer from Ethereum or BSC to Supernova</li>
+                    <li>You'll only need a small amount for gas (~0.01 xZNN)</li>
+                    <li>This is a required one-time setup to participate</li>
+                </ul>
+                <a href="https://bridge.mainnet.zenon.community/?referral=2f5b37021a357e21637d34610e750a1c253827317a34395a76181f2f243062787167027f42156f7e" target="_blank" class="setup-button">
+                    <i>🔄</i> Open Zenon Bridge
+                </a>
+            </div>
+        </div>
+        
         <footer>
-            <p>Contract Address: <span id="contractAddressDisplay">0xbF1d0383F67F454722441F7C9A4A6851D599D361</span></p>
-            <p>© 2025 FreeZenonFriday</p>
+            <p>Contract Address: <span class="contract-address" id="contractAddressDisplay">0xbF1d0383F67F454722441F7C9A4A6851D599D361</span></p>
+            <p>Powered by <a href="https://zenon.network" target="_blank" class="zenon-link">Zenon Network</a> © 2025</p>
         </footer>
     </div>
 
@@ -434,452 +763,4 @@
                         "indexed": false,
                         "internalType": "uint256",
                         "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "Withdrawn",
-                "type": "event"
-            },
-            {
-                "stateMutability": "payable",
-                "type": "receive"
-            },
-            {
-                "inputs": [],
-                "name": "entryFee",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "firstPrize",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "getParticipantCount",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "isActive",
-                "outputs": [
-                    {
-                        "internalType": "bool",
-                        "name": "",
-                        "type": "bool"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "nextDrawTime",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "owner",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "participants",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "secondPrize",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            }
-        ];
-        
-        // DOM Elements
-        const joinButton = document.getElementById('joinButton');
-        const statusBox = document.getElementById('statusBox');
-        const participantCount = document.getElementById('participantCount');
-        const countdown = document.getElementById('countdown');
-        const walletInfo = document.getElementById('walletInfo');
-        const walletAddress = document.getElementById('walletAddress');
-        const contractAddressDisplay = document.getElementById('contractAddressDisplay');
-        
-        // Global variables
-        let web3;
-        let contract;
-        let userAccount;
-        let isCompetitionActive = false;
-        let drawTimestamp;
-        let hasJoined = false;
-        
-        // Initialize the page
-        window.addEventListener('load', async () => {
-            contractAddressDisplay.textContent = contractAddress;
-            
-            // Check if MetaMask is installed
-            if (window.ethereum) {
-                try {
-                    // Set up event listeners for account changes
-                    window.ethereum.on('accountsChanged', handleAccountsChanged);
-                    window.ethereum.on('chainChanged', () => window.location.reload());
-                    
-                    // Initialize Web3
-                    web3 = new Web3(window.ethereum);
-                    
-                    // Try to get accounts (will not prompt user)
-                    const accounts = await web3.eth.getAccounts();
-                    if (accounts.length > 0) {
-                        // User is already connected
-                        userAccount = accounts[0];
-                        displayWalletInfo();
-                        initializeContract();
-                    } else {
-                        // User needs to connect manually
-                        updateStatus("Connect your wallet to join the lottery", "info");
-                        
-                        // Try to initialize contract for view functions even without account
-                        initializeContract();
-                    }
-                } catch (error) {
-                    console.error("Error initializing the page:", error);
-                    updateStatus("Error initializing the page. Please refresh and try again.", "error");
-                }
-            } else {
-                // MetaMask not installed
-                updateStatus("Please install MetaMask to use this application", "error");
-                joinButton.disabled = true;
-            }
-        });
-        
-        // Initialize contract and load data
-        async function initializeContract() {
-            try {
-                // Initialize contract
-                contract = new web3.eth.Contract(abi, contractAddress);
-                
-                // Load contract data
-                await loadContractData();
-                
-                // Start countdown timer
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-                
-                // Auto refresh participant count periodically
-                setInterval(updateParticipantCount, 30000);
-            } catch (error) {
-                console.error("Error initializing contract:", error);
-                updateStatus("Error connecting to the contract. Please check your network.", "error");
-            }
-        }
-        
-        // Load data from the contract
-        async function loadContractData() {
-            try {
-                // Get next draw time
-                drawTimestamp = await contract.methods.nextDrawTime().call();
-                
-                // Get competition status
-                isCompetitionActive = await contract.methods.isActive().call();
-                
-                // Update participant count
-                await updateParticipantCount();
-                
-                // Update button state based on competition status
-                updateButtonState();
-            } catch (error) {
-                console.error("Error loading contract data:", error);
-                updateStatus("Error loading lottery data. Please check your connection.", "error");
-            }
-        }
-        
-        // Handle accounts changed
-        function handleAccountsChanged(accounts) {
-            if (accounts.length === 0) {
-                // User logged out
-                userAccount = null;
-                walletInfo.style.display = 'none';
-                updateStatus("Connect your wallet to join the lottery", "info");
-            } else if (accounts[0] !== userAccount) {
-                // Account changed
-                userAccount = accounts[0];
-                displayWalletInfo();
-                updateButtonState();
-            }
-        }
-        
-        // Display wallet info
-        function displayWalletInfo() {
-            if (userAccount) {
-                walletInfo.style.display = 'block';
-                walletAddress.textContent = userAccount;
-            } else {
-                walletInfo.style.display = 'none';
-            }
-        }
-        
-        // Update participant count
-        async function updateParticipantCount() {
-            try {
-                const count = await contract.methods.getParticipantCount().call();
-                participantCount.textContent = count;
-            } catch (error) {
-                console.error("Error updating participant count:", error);
-                participantCount.textContent = "Error loading";
-            }
-        }
-        
-        // Update countdown timer
-        function updateCountdown() {
-            if (!drawTimestamp) {
-                countdown.textContent = "Loading draw time...";
-                return;
-            }
-            
-            const now = Math.floor(Date.now() / 1000);
-            const timeLeft = drawTimestamp - now;
-            
-            if (timeLeft <= 0) {
-                countdown.textContent = "Draw is in progress!";
-                updateButtonState();
-                return;
-            }
-            
-            const days = Math.floor(timeLeft / 86400);
-            const hours = Math.floor((timeLeft % 86400) / 3600);
-            const minutes = Math.floor((timeLeft % 3600) / 60);
-            const seconds = timeLeft % 60;
-            
-            countdown.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
-        
-        // Update button state
-        function updateButtonState() {
-            const now = Math.floor(Date.now() / 1000);
-            
-            if (!userAccount) {
-                joinButton.textContent = "Connect Wallet";
-                joinButton.disabled = false;
-            } else if (!isCompetitionActive) {
-                joinButton.textContent = "Competition Not Active";
-                joinButton.disabled = true;
-                updateStatus("The competition is not active yet. Please check back later.", "info");
-            } else if (drawTimestamp && now >= drawTimestamp) {
-                joinButton.textContent = "Entry Period Ended";
-                joinButton.disabled = true;
-                updateStatus("The entry period has ended. Results will be announced soon!", "info");
-            } else if (hasJoined) {
-                joinButton.textContent = "You've Joined!";
-                joinButton.disabled = true;
-                updateStatus("You've successfully joined the lottery! Good luck!", "success");
-            } else {
-                joinButton.textContent = "Join the Lottery";
-                joinButton.disabled = false;
-            }
-        }
-        
-        // Update status box
-        function updateStatus(message, type = "info") {
-            statusBox.textContent = message;
-            
-            // Reset classes
-            statusBox.classList.remove("status-info", "status-success", "status-error", "status-waiting", "status-hidden");
-            
-            // Add appropriate class
-            statusBox.classList.add(`status-${type}`);
-            
-            // Show the status box
-            statusBox.classList.remove("status-hidden");
-        }
-        
-        // Join button click handler
-        joinButton.addEventListener('click', async () => {
-            if (!userAccount) {
-                // Connect wallet
-                try {
-                    updateStatus("Connecting wallet...", "waiting");
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    userAccount = accounts[0];
-                    displayWalletInfo();
-                    
-                    // Initialize contract if needed
-                    if (!contract) {
-                        initializeContract();
-                    } else {
-                        updateButtonState();
-                    }
-                    
-                    updateStatus("Wallet connected successfully!", "success");
-                    
-                    // Check network
-                    await checkNetwork();
-                } catch (error) {
-                    console.error("Error connecting wallet:", error);
-                    updateStatus("Error connecting wallet. Please try again.", "error");
-                }
-                return;
-            }
-            
-            // Check network before proceeding
-            if (!await checkNetwork()) {
-                return;
-            }
-            
-            // Join the lottery
-            try {
-                // Update button state
-                joinButton.disabled = true;
-                joinButton.innerHTML = '<span class="loader"></span> Processing...';
-                
-                updateStatus("Joining lottery...", "waiting");
-                
-                // Call enter function
-                await contract.methods.enter().send({
-                    from: userAccount,
-                    value: web3.utils.toWei("0", "ether")
-                });
-                
-                // Update state
-                hasJoined = true;
-                updateButtonState();
-                
-                // Update participant count
-                await updateParticipantCount();
-                
-                updateStatus("You've successfully joined the lottery! Good luck!", "success");
-            } catch (error) {
-                console.error("Error joining lottery:", error);
-                
-                // Check for specific errors
-                if (error.message.includes("Competition not active")) {
-                    updateStatus("The competition is not currently active.", "error");
-                } else if (error.message.includes("Draw already ended")) {
-                    updateStatus("The entry period has ended.", "error");
-                } else if (error.message.includes("Not enough xZNN sent")) {
-                    updateStatus("Not enough xZNN sent for entry fee.", "error");
-                } else if (error.message.includes("user rejected")) {
-                    updateStatus("Transaction rejected. You canceled the transaction.", "error");
-                } else {
-                    updateStatus("Error joining lottery: " + error.message, "error");
-                }
-                
-                // Reset button
-                updateButtonState();
-            }
-        });
-        
-        // Check if user is on the correct network
-        async function checkNetwork() {
-            try {
-                const chainId = await web3.eth.getChainId();
-                
-                if (Number(chainId) !== 73405) {
-                    updateStatus("Please switch to the Supernova network (Chain ID: 73405)", "error");
-                    
-                    // Try to switch networks
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0x11EAD' }], // 73405 in hex
-                        });
-                        return true;
-                    } catch (switchError) {
-                        // This error code indicates that the chain has not been added to MetaMask
-                        if (switchError.code === 4902) {
-                            try {
-                                await window.ethereum.request({
-                                    method: 'wallet_addEthereumChain',
-                                    params: [
-                                        {
-                                            chainId: '0x11EAD',
-                                            chainName: 'Zenon Supernova',
-                                            nativeCurrency: {
-                                                name: 'Zenon',
-                                                symbol: 'xZNN',
-                                                decimals: 18,
-                                            },
-                                            rpcUrls: ['https://supernova.zenon.community'],
-                                            blockExplorerUrls: ['https://explorer.zenon.community'],
-                                        },
-                                    ],
-                                });
-                                return true;
-                            } catch (addError) {
-                                console.error('Error adding Supernova network', addError);
-                                return false;
-                            }
-                        }
-                        return false;
-                    }
-                }
-                
-                return true;
-            } catch (error) {
-                console.error("Error checking network:", error);
-                updateStatus("Error checking network. Please make sure you're connected to Supernova.", "error");
-                return false;
-            }
-        }
-    </script>
-</body>
-</html>
+                        "type": "
