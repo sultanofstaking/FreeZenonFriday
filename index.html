@@ -2,72 +2,334 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>FreeZenonFriday Lottery - Debug</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeZenonFriday Lottery</title>
     <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --accent-color: #f39c12;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --danger-color: #e74c3c;
+            --text-color: #333333;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-color);
             padding: 20px;
         }
-        button {
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .info-box {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .info-box h2 {
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .info-icon {
+            margin-right: 10px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .prize-box {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        
+        .prize-card {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            width: 48%;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .prize-card.first {
+            border-top: 4px solid var(--secondary-color);
+        }
+        
+        .prize-card.second {
+            border-top: 4px solid var(--accent-color);
+        }
+        
+        .prize-amount {
+            font-size: 2.2rem;
+            font-weight: bold;
             margin: 10px 0;
-            padding: 8px 16px;
         }
-        pre {
-            background-color: #f5f5f5;
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
+        
+        .prize-card.first .prize-amount {
+            color: var(--secondary-color);
         }
-        #console {
-            background-color: #2c3e50;
-            color: #ffffff;
-            padding: 10px;
-            border-radius: 4px;
-            font-family: monospace;
-            height: 200px;
-            overflow-y: auto;
+        
+        .prize-card.second .prize-amount {
+            color: var(--accent-color);
+        }
+        
+        .timer-box {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .countdown {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--dark-color);
+            margin: 10px 0;
+        }
+        
+        .button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status-box {
+            border-radius: var(--border-radius);
+            padding: 15px;
             margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .status-info {
+            background-color: #d6eaf8;
+            color: var(--primary-color);
+        }
+        
+        .status-success {
+            background-color: #d5f5e3;
+            color: var(--secondary-color);
+        }
+        
+        .status-error {
+            background-color: #fadbd8;
+            color: var(--danger-color);
+        }
+        
+        .status-waiting {
+            background-color: #fef9e7;
+            color: var(--accent-color);
+        }
+        
+        .status-hidden {
+            display: none;
+        }
+        
+        .participants-box {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+        }
+        
+        .participants-count {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .wallet-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        
+        .wallet-address {
+            font-family: monospace;
+            background-color: white;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 5px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Loading spinner */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 600px) {
+            .prize-box {
+                flex-direction: column;
+            }
+            
+            .prize-card {
+                width: 100%;
+                margin-bottom: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>FreeZenonFriday Lottery - Debug</h1>
-    
-    <h2>Contract Information</h2>
-    <p>Contract Address: <span id="contractAddress">0xbF1d0383F67F454722441F7C9A4A6851D599D361</span></p>
-    
-    <h2>Actions</h2>
-    <button id="connectButton">1. Connect Wallet</button>
-    <button id="checkNetworkButton">2. Check Network</button>
-    <button id="loadContractButton">3. Load Contract</button>
-    <button id="checkMethodsButton">4. Check Contract Methods</button>
-    <button id="enterLotteryButton">5. Enter Lottery</button>
-    
-    <h2>Console</h2>
-    <div id="console"></div>
-    
+    <div class="container">
+        <header>
+            <h1>FreeZenonFriday</h1>
+            <p class="subtitle">Weekly Lottery</p>
+        </header>
+        
+        <div class="info-box">
+            <h2>How It Works</h2>
+            <div class="info-item">
+                <span class="info-icon">🎟️</span>
+                <span>Enter the lottery for free (just pay gas)</span>
+            </div>
+            <div class="info-item">
+                <span class="info-icon">🕒</span>
+                <span>Drawings happen every Friday at 4:00 PM EDT</span>
+            </div>
+            <div class="info-item">
+                <span class="info-icon">🏆</span>
+                <span>Two winners are selected randomly each week</span>
+            </div>
+            <div class="info-item">
+                <span class="info-icon">⛓️</span>
+                <span>Runs on the Zenon Supernova blockchain</span>
+            </div>
+        </div>
+        
+        <div class="prize-box">
+            <div class="prize-card first">
+                <h3>First Prize</h3>
+                <div class="prize-amount">2.1 xZNN</div>
+                <p>First randomly selected winner</p>
+            </div>
+            <div class="prize-card second">
+                <h3>Second Prize</h3>
+                <div class="prize-amount">0.9 xZNN</div>
+                <p>Second randomly selected winner</p>
+            </div>
+        </div>
+        
+        <div class="timer-box">
+            <h3>Next Drawing</h3>
+            <div class="countdown" id="countdown">Loading...</div>
+        </div>
+        
+        <div class="participants-box">
+            <h3>Current Participants</h3>
+            <div class="participants-count" id="participantCount">-</div>
+        </div>
+        
+        <button class="button" id="joinButton">Join the Lottery</button>
+        
+        <div class="status-box status-hidden" id="statusBox"></div>
+        
+        <div class="wallet-info" id="walletInfo" style="display: none;">
+            <h3>Connected Wallet</h3>
+            <div class="wallet-address" id="walletAddress"></div>
+        </div>
+        
+        <footer>
+            <p>Contract Address: <span id="contractAddressDisplay">0xbF1d0383F67F454722441F7C9A4A6851D599D361</span></p>
+            <p>© 2025 FreeZenonFriday</p>
+        </footer>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
     <script>
-        // Utility to log to our console div
-        function log(message, isError = false) {
-            const console = document.getElementById('console');
-            const entry = document.createElement('div');
-            entry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
-            if (isError) {
-                entry.style.color = '#ff6b6b';
-            }
-            console.appendChild(entry);
-            console.scrollTop = console.scrollHeight;
-        }
-        
-        // Global variables
-        let web3;
-        let accounts;
-        let contract;
-        
-        // Full contract ABI
+        // Contract information
+        const contractAddress = "0xbF1d0383F67F454722441F7C9A4A6851D599D361";
         const abi = [
             {
                 "inputs": [],
@@ -294,130 +556,330 @@
             }
         ];
         
-        // 1. Connect Wallet
-        document.getElementById('connectButton').addEventListener('click', async () => {
-            try {
-                if (!window.ethereum) {
-                    throw new Error('MetaMask not installed!');
+        // DOM Elements
+        const joinButton = document.getElementById('joinButton');
+        const statusBox = document.getElementById('statusBox');
+        const participantCount = document.getElementById('participantCount');
+        const countdown = document.getElementById('countdown');
+        const walletInfo = document.getElementById('walletInfo');
+        const walletAddress = document.getElementById('walletAddress');
+        const contractAddressDisplay = document.getElementById('contractAddressDisplay');
+        
+        // Global variables
+        let web3;
+        let contract;
+        let userAccount;
+        let isCompetitionActive = false;
+        let drawTimestamp;
+        let hasJoined = false;
+        
+        // Initialize the page
+        window.addEventListener('load', async () => {
+            contractAddressDisplay.textContent = contractAddress;
+            
+            // Check if MetaMask is installed
+            if (window.ethereum) {
+                try {
+                    // Set up event listeners for account changes
+                    window.ethereum.on('accountsChanged', handleAccountsChanged);
+                    window.ethereum.on('chainChanged', () => window.location.reload());
+                    
+                    // Initialize Web3
+                    web3 = new Web3(window.ethereum);
+                    
+                    // Try to get accounts (will not prompt user)
+                    const accounts = await web3.eth.getAccounts();
+                    if (accounts.length > 0) {
+                        // User is already connected
+                        userAccount = accounts[0];
+                        displayWalletInfo();
+                        initializeContract();
+                    } else {
+                        // User needs to connect manually
+                        updateStatus("Connect your wallet to join the lottery", "info");
+                        
+                        // Try to initialize contract for view functions even without account
+                        initializeContract();
+                    }
+                } catch (error) {
+                    console.error("Error initializing the page:", error);
+                    updateStatus("Error initializing the page. Please refresh and try again.", "error");
                 }
-                
-                web3 = new Web3(window.ethereum);
-                accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                
-                log(`Connected! Account: ${accounts[0]}`);
-            } catch (error) {
-                log(`Error connecting: ${error.message}`, true);
+            } else {
+                // MetaMask not installed
+                updateStatus("Please install MetaMask to use this application", "error");
+                joinButton.disabled = true;
             }
         });
         
-        // 2. Check Network
-        document.getElementById('checkNetworkButton').addEventListener('click', async () => {
+        // Initialize contract and load data
+        async function initializeContract() {
             try {
-                if (!web3) {
-                    throw new Error('Please connect wallet first');
-                }
-                
-                const chainId = await web3.eth.getChainId();
-                log(`Current Chain ID: ${chainId}`);
-                
-                if (Number(chainId) !== 73405) {
-                    log('Wrong network. Please switch to Supernova (Chain ID: 73405)', true);
-                } else {
-                    log('Correct network: Supernova');
-                }
-            } catch (error) {
-                log(`Error checking network: ${error.message}`, true);
-            }
-        });
-        
-        // 3. Load Contract
-        document.getElementById('loadContractButton').addEventListener('click', async () => {
-            try {
-                if (!web3) {
-                    throw new Error('Please connect wallet first');
-                }
-                
-                const contractAddress = document.getElementById('contractAddress').textContent;
+                // Initialize contract
                 contract = new web3.eth.Contract(abi, contractAddress);
                 
-                log('Contract loaded successfully!');
+                // Load contract data
+                await loadContractData();
+                
+                // Start countdown timer
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+                
+                // Auto refresh participant count periodically
+                setInterval(updateParticipantCount, 30000);
             } catch (error) {
-                log(`Error loading contract: ${error.message}`, true);
+                console.error("Error initializing contract:", error);
+                updateStatus("Error connecting to the contract. Please check your network.", "error");
             }
-        });
+        }
         
-        // 4. Check Contract Methods
-        document.getElementById('checkMethodsButton').addEventListener('click', async () => {
+        // Load data from the contract
+        async function loadContractData() {
             try {
-                if (!contract) {
-                    throw new Error('Please load contract first');
-                }
+                // Get next draw time
+                drawTimestamp = await contract.methods.nextDrawTime().call();
                 
-                // Check available methods
-                log('Available methods in contract.methods:');
-                const methodsArray = [];
-                for (const key in contract.methods) {
-                    if (typeof contract.methods[key] === 'function' && key !== 'constructor') {
-                        methodsArray.push(key);
-                    }
-                }
-                log(methodsArray.join(', '));
+                // Get competition status
+                isCompetitionActive = await contract.methods.isActive().call();
                 
-                // Specifically check for "enter" method
-                const hasEnterMethod = 'enter' in contract.methods;
-                log(`Does 'enter' method exist? ${hasEnterMethod}`);
+                // Update participant count
+                await updateParticipantCount();
                 
-                // Try to call a view function to test contract connection
+                // Update button state based on competition status
+                updateButtonState();
+            } catch (error) {
+                console.error("Error loading contract data:", error);
+                updateStatus("Error loading lottery data. Please check your connection.", "error");
+            }
+        }
+        
+        // Handle accounts changed
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                // User logged out
+                userAccount = null;
+                walletInfo.style.display = 'none';
+                updateStatus("Connect your wallet to join the lottery", "info");
+            } else if (accounts[0] !== userAccount) {
+                // Account changed
+                userAccount = accounts[0];
+                displayWalletInfo();
+                updateButtonState();
+            }
+        }
+        
+        // Display wallet info
+        function displayWalletInfo() {
+            if (userAccount) {
+                walletInfo.style.display = 'block';
+                walletAddress.textContent = userAccount;
+            } else {
+                walletInfo.style.display = 'none';
+            }
+        }
+        
+        // Update participant count
+        async function updateParticipantCount() {
+            try {
+                const count = await contract.methods.getParticipantCount().call();
+                participantCount.textContent = count;
+            } catch (error) {
+                console.error("Error updating participant count:", error);
+                participantCount.textContent = "Error loading";
+            }
+        }
+        
+        // Update countdown timer
+        function updateCountdown() {
+            if (!drawTimestamp) {
+                countdown.textContent = "Loading draw time...";
+                return;
+            }
+            
+            const now = Math.floor(Date.now() / 1000);
+            const timeLeft = drawTimestamp - now;
+            
+            if (timeLeft <= 0) {
+                countdown.textContent = "Draw is in progress!";
+                updateButtonState();
+                return;
+            }
+            
+            const days = Math.floor(timeLeft / 86400);
+            const hours = Math.floor((timeLeft % 86400) / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+            
+            countdown.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+        
+        // Update button state
+        function updateButtonState() {
+            const now = Math.floor(Date.now() / 1000);
+            
+            if (!userAccount) {
+                joinButton.textContent = "Connect Wallet";
+                joinButton.disabled = false;
+            } else if (!isCompetitionActive) {
+                joinButton.textContent = "Competition Not Active";
+                joinButton.disabled = true;
+                updateStatus("The competition is not active yet. Please check back later.", "info");
+            } else if (drawTimestamp && now >= drawTimestamp) {
+                joinButton.textContent = "Entry Period Ended";
+                joinButton.disabled = true;
+                updateStatus("The entry period has ended. Results will be announced soon!", "info");
+            } else if (hasJoined) {
+                joinButton.textContent = "You've Joined!";
+                joinButton.disabled = true;
+                updateStatus("You've successfully joined the lottery! Good luck!", "success");
+            } else {
+                joinButton.textContent = "Join the Lottery";
+                joinButton.disabled = false;
+            }
+        }
+        
+        // Update status box
+        function updateStatus(message, type = "info") {
+            statusBox.textContent = message;
+            
+            // Reset classes
+            statusBox.classList.remove("status-info", "status-success", "status-error", "status-waiting", "status-hidden");
+            
+            // Add appropriate class
+            statusBox.classList.add(`status-${type}`);
+            
+            // Show the status box
+            statusBox.classList.remove("status-hidden");
+        }
+        
+        // Join button click handler
+        joinButton.addEventListener('click', async () => {
+            if (!userAccount) {
+                // Connect wallet
                 try {
-                    const count = await contract.methods.getParticipantCount().call();
-                    log(`Current participant count: ${count}`);
+                    updateStatus("Connecting wallet...", "waiting");
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    userAccount = accounts[0];
+                    displayWalletInfo();
                     
-                    const isActive = await contract.methods.isActive().call();
-                    log(`Is competition active? ${isActive}`);
-                } catch (callError) {
-                    log(`Error calling view function: ${callError.message}`, true);
+                    // Initialize contract if needed
+                    if (!contract) {
+                        initializeContract();
+                    } else {
+                        updateButtonState();
+                    }
+                    
+                    updateStatus("Wallet connected successfully!", "success");
+                    
+                    // Check network
+                    await checkNetwork();
+                } catch (error) {
+                    console.error("Error connecting wallet:", error);
+                    updateStatus("Error connecting wallet. Please try again.", "error");
                 }
-            } catch (error) {
-                log(`Error checking methods: ${error.message}`, true);
+                return;
             }
-        });
-        
-        // 5. Enter Lottery
-        document.getElementById('enterLotteryButton').addEventListener('click', async () => {
+            
+            // Check network before proceeding
+            if (!await checkNetwork()) {
+                return;
+            }
+            
+            // Join the lottery
             try {
-                if (!contract || !accounts) {
-                    throw new Error('Please connect wallet and load contract first');
-                }
+                // Update button state
+                joinButton.disabled = true;
+                joinButton.innerHTML = '<span class="loader"></span> Processing...';
                 
-                log('Entering lottery...');
+                updateStatus("Joining lottery...", "waiting");
                 
-                // Use a different approach to access the method
-                const enterMethod = contract.methods.enter();
-                if (!enterMethod) {
-                    throw new Error("Couldn't access enter method");
-                }
-                
-                log('Sending transaction...');
-                const result = await enterMethod.send({ 
-                    from: accounts[0], 
+                // Call enter function
+                await contract.methods.enter().send({
+                    from: userAccount,
                     value: web3.utils.toWei("0", "ether")
                 });
                 
-                log(`Success! Transaction hash: ${result.transactionHash}`);
-            } catch (error) {
-                log(`Error entering lottery: ${error.message}`, true);
+                // Update state
+                hasJoined = true;
+                updateButtonState();
                 
-                // More detailed debugging
-                if (error.message.includes('not a function')) {
-                    log('Debug: Checking contract methods object type...', true);
-                    log(`Type of contract.methods: ${typeof contract.methods}`);
-                    log(`contract.methods keys: ${Object.keys(contract.methods)}`);
+                // Update participant count
+                await updateParticipantCount();
+                
+                updateStatus("You've successfully joined the lottery! Good luck!", "success");
+            } catch (error) {
+                console.error("Error joining lottery:", error);
+                
+                // Check for specific errors
+                if (error.message.includes("Competition not active")) {
+                    updateStatus("The competition is not currently active.", "error");
+                } else if (error.message.includes("Draw already ended")) {
+                    updateStatus("The entry period has ended.", "error");
+                } else if (error.message.includes("Not enough xZNN sent")) {
+                    updateStatus("Not enough xZNN sent for entry fee.", "error");
+                } else if (error.message.includes("user rejected")) {
+                    updateStatus("Transaction rejected. You canceled the transaction.", "error");
+                } else {
+                    updateStatus("Error joining lottery: " + error.message, "error");
                 }
+                
+                // Reset button
+                updateButtonState();
             }
         });
         
-        // Initialize logging
-        log('Debug page loaded. Follow the numbered steps to test each part of the process.');
+        // Check if user is on the correct network
+        async function checkNetwork() {
+            try {
+                const chainId = await web3.eth.getChainId();
+                
+                if (Number(chainId) !== 73405) {
+                    updateStatus("Please switch to the Supernova network (Chain ID: 73405)", "error");
+                    
+                    // Try to switch networks
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x11EAD' }], // 73405 in hex
+                        });
+                        return true;
+                    } catch (switchError) {
+                        // This error code indicates that the chain has not been added to MetaMask
+                        if (switchError.code === 4902) {
+                            try {
+                                await window.ethereum.request({
+                                    method: 'wallet_addEthereumChain',
+                                    params: [
+                                        {
+                                            chainId: '0x11EAD',
+                                            chainName: 'Zenon Supernova',
+                                            nativeCurrency: {
+                                                name: 'Zenon',
+                                                symbol: 'xZNN',
+                                                decimals: 18,
+                                            },
+                                            rpcUrls: ['https://supernova.zenon.community'],
+                                            blockExplorerUrls: ['https://explorer.zenon.community'],
+                                        },
+                                    ],
+                                });
+                                return true;
+                            } catch (addError) {
+                                console.error('Error adding Supernova network', addError);
+                                return false;
+                            }
+                        }
+                        return false;
+                    }
+                }
+                
+                return true;
+            } catch (error) {
+                console.error("Error checking network:", error);
+                updateStatus("Error checking network. Please make sure you're connected to Supernova.", "error");
+                return false;
+            }
+        }
     </script>
 </body>
 </html>
