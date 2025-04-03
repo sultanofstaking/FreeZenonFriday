@@ -199,7 +199,7 @@
         
         <div class="info">
             <h3>Current Participants</h3>
-            <span id="participantCount">-</span>
+            <span id="participantCount">4</span>
         </div>
         
         <button class="button" id="joinButton">Join the Lottery</button>
@@ -237,7 +237,12 @@
         
         // Contract configuration
         const contractAddress = "0xbF1d0383F67F454722441F7C9A4A6851D599D361";
-        const abi = [
+        
+        // Direct RPC URL - use the public Zenon Supernova RPC endpoint
+        const publicRpcUrl = "https://rpc.novascan.io";
+        
+        // Simplified ABI with just the methods we need for public viewing
+        const viewAbi = [
             {
                 "inputs": [],
                 "name": "getParticipantCount",
@@ -251,69 +256,287 @@
                 "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
                 "stateMutability": "view",
                 "type": "function"
-            },
+            }
+        ];
+        
+        // Full ABI for contract interaction when user connects wallet
+        const fullAbi = [
             {
                 "inputs": [],
                 "name": "enter",
                 "outputs": [],
                 "stateMutability": "payable",
                 "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "selectWinners",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "participant",
+                        "type": "address"
+                    }
+                ],
+                "name": "NewEntry",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "newFee",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setEntryFee",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "startCompetition",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "firstWinner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "firstAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "secondWinner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "secondAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "WinnersSelected",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "withdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Withdrawn",
+                "type": "event"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            },
+            {
+                "inputs": [],
+                "name": "entryFee",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "firstPrize",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getParticipantCount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "isActive",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "nextDrawTime",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "participants",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "secondPrize",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
             }
         ];
         
         // Global variables
-        let web3;
-        let contract;
+        let web3Public; // For read-only operations
+        let web3Wallet; // For wallet-connected operations
+        let publicContract; // Public read-only contract instance
+        let walletContract; // Contract instance for wallet operations
         let drawTimestamp = 1743796800; // April 4, 2025, 20:00 UTC (fallback)
         
         // Initialize
-        window.addEventListener('DOMContentLoaded', async () => {
-            // Initialize web3 with provider if available
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
-                
-                try {
-                    // Initialize contract (minimal)
-                    contract = new web3.eth.Contract(abi, contractAddress);
-                    
-                    // Get draw timestamp
-                    try {
-                        drawTimestamp = await contract.methods.nextDrawTime().call();
-                    } catch (error) {
-                        console.error("Error getting draw time:", error);
-                    }
-                    
-                    // Initial participant count update
-                    updateParticipantCount();
-                    
-                    // Start updating countdown every second
-                    updateCountdown();
-                    setInterval(updateCountdown, 1000);
-                    
-                    // Update participant count every 30 seconds
-                    setInterval(updateParticipantCount, 30000);
-                    
-                } catch (error) {
-                    console.error("Contract initialization error:", error);
-                }
-            } else {
-                // Fallback for when web3 is not available
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-                participantCount.textContent = "4"; // Static fallback
-            }
+        window.addEventListener('DOMContentLoaded', () => {
+            // Initialize public web3 with direct RPC provider
+            web3Public = new Web3(publicRpcUrl);
+            
+            // Initialize public contract with minimal ABI
+            publicContract = new web3Public.Contract(viewAbi, contractAddress);
+            
+            // Get initial data
+            fetchPublicData();
+            
+            // Start updating countdown every second
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            
+            // Update participant count every 15 seconds
+            setInterval(fetchPublicData, 15000);
+            
+            // Setup wallet connection listener
+            joinButton.addEventListener('click', connectWalletAndJoin);
         });
         
-        // Update participant count from contract
-        async function updateParticipantCount() {
+        // Fetch public data without requiring wallet connection
+        async function fetchPublicData() {
             try {
-                if (contract) {
-                    const count = await contract.methods.getParticipantCount().call();
+                // Get participant count
+                try {
+                    const count = await publicContract.methods.getParticipantCount().call();
                     participantCount.textContent = count;
+                    console.log("Participant count updated:", count);
+                } catch (countError) {
+                    console.error("Error getting participant count:", countError);
+                }
+                
+                // Get draw timestamp
+                try {
+                    const timestamp = await publicContract.methods.nextDrawTime().call();
+                    drawTimestamp = timestamp;
+                    console.log("Draw timestamp updated:", timestamp);
+                } catch (timeError) {
+                    console.error("Error getting draw time:", timeError);
                 }
             } catch (error) {
-                console.error("Error updating participant count:", error);
-                // Don't update the UI on error to keep the last valid value
+                console.error("Error fetching public data:", error);
             }
         }
         
@@ -339,8 +562,8 @@
             }
         }
         
-        // Join button click handler
-        joinButton.addEventListener('click', async () => {
+        // Connect wallet and join lottery
+        async function connectWalletAndJoin() {
             if (!window.ethereum) {
                 showStatus("Please install MetaMask to participate", "error");
                 return;
@@ -350,9 +573,12 @@
                 // Request account access
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const account = accounts[0];
+                console.log("User account:", account);
                 
                 // Check network
                 const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                console.log("Current chain ID:", chainId);
+                
                 if (parseInt(chainId, 16) !== 73405) {
                     showStatus("Please switch to Zenon Supernova network (Chain ID: 73405)", "error");
                     return;
@@ -360,28 +586,42 @@
                 
                 showStatus("Joining lottery...", "info");
                 
-                // Initialize web3 and contract if needed
-                if (!web3) web3 = new Web3(window.ethereum);
-                if (!contract) contract = new web3.eth.Contract(abi, contractAddress);
+                // Initialize wallet web3 and contract
+                web3Wallet = new Web3(window.ethereum);
+                walletContract = new web3Wallet.Contract(fullAbi, contractAddress);
                 
-                // Call enter function
-                await contract.methods.enter().send({
-                    from: account,
-                    value: "0"
-                });
-                
-                showStatus("You've joined the lottery! Good luck!", "success");
-                joinButton.textContent = "You've Joined!";
-                joinButton.disabled = true;
-                
-                // Update participant count after successful entry
-                updateParticipantCount();
+                try {
+                    // Call enter function
+                    const result = await walletContract.methods.enter().send({
+                        from: account,
+                        value: "0"
+                    });
+                    
+                    console.log("Transaction result:", result);
+                    
+                    showStatus("You've joined the lottery! Good luck!", "success");
+                    joinButton.textContent = "You've Joined!";
+                    joinButton.disabled = true;
+                    
+                    // Update participant count after successful entry
+                    setTimeout(fetchPublicData, 2000);
+                } catch (txError) {
+                    console.error("Transaction error:", txError);
+                    
+                    if (txError.message && txError.message.includes("Competition not active")) {
+                        showStatus("Error: The competition is not currently active", "error");
+                    } else if (txError.message && txError.message.includes("user rejected")) {
+                        showStatus("Transaction rejected by user", "error");
+                    } else {
+                        showStatus("Error: " + (txError.message || "Transaction failed"), "error");
+                    }
+                }
                 
             } catch (error) {
-                console.error(error);
-                showStatus("Error: " + (error.message || "Transaction failed"), "error");
+                console.error("Wallet connection error:", error);
+                showStatus("Error: " + (error.message || "Failed to connect wallet"), "error");
             }
-        });
+        }
         
         // Show status message
         function showStatus(message, type) {
