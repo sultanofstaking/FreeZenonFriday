@@ -253,367 +253,337 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
+
+<script>
+    // DOM Elements
+    const joinButton = document.getElementById('joinButton');
+    const refreshCountButton = document.getElementById('refreshCountButton');
+    const statusBox = document.getElementById('statusBox');
+    const participantCount = document.getElementById('participantCount');
+    const countdown = document.getElementById('countdown');
     
-    <script>
-        // DOM Elements
-        const joinButton = document.getElementById('joinButton');
-        const refreshCountButton = document.getElementById('refreshCountButton');
-        const statusBox = document.getElementById('statusBox');
-        const participantCount = document.getElementById('participantCount');
-        const countdown = document.getElementById('countdown');
-        
-        // Contract configuration
-        const contractAddress = "0xbF1d0383F67F454722441F7C9A4A6851D599D361";
-        
-// Initial placeholder until we get the real time
-let drawDate = new Date("April 4, 2025 16:00:00 EDT");
-
-// Function to get the next draw time from the contract
-async function getNextDrawTime() {
-    if (window.ethereum) {
-        try {
-            const web3 = new Web3(window.ethereum);
-            const contract = new web3.eth.Contract([
-                {
-                    "inputs": [],
-                    "name": "nextDrawTime",
-                    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-                    "stateMutability": "view",
-                    "type": "function"
-                }
-            ], contractAddress);
-            
-            const timestamp = await contract.methods.nextDrawTime().call();
-            const nextDrawDate = new Date(timestamp * 1000); // Convert from seconds to milliseconds
-            
-            console.log("Next draw time from contract:", nextDrawDate);
-            
-            // Only update if it's in the future
-            if (nextDrawDate > new Date()) {
-                drawDate = nextDrawDate;
-                // Update the countdown immediately
-                updateCountdown();
-            }
-        } catch (error) {
-            console.error("Error getting next draw time:", error);
-        }
-    }
-}
-
-// Then find this section in the DOMContentLoaded listener:
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    // Set up button handlers
-    joinButton.addEventListener('click', connectWalletAndJoin);
-    refreshCountButton.addEventListener('click', connectAndShowCount);
+    // Contract configuration
+    const contractAddress = "0xbF1d0383F67F454722441F7C9A4A6851D599D361";
     
-    // Check if MetaMask is already connected
-    checkWalletConnection();
-});
+    // Initial placeholder until we get the real time
+    let drawDate = new Date("April 4, 2025 16:00:00 EDT");
 
-// And add this call to get the next draw time (keep existing code):
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    // Set up button handlers
-    joinButton.addEventListener('click', connectWalletAndJoin);
-    refreshCountButton.addEventListener('click', connectAndShowCount);
-    
-    // Check if MetaMask is already connected
-    checkWalletConnection();
-    
-    // Get the next draw time from the contract (no wallet needed)
-    getNextDrawTime();
-});
-
-// Also, add this to the connectAndShowCount function, just after checking the network:
-
-// Get participant count
-getParticipantCount();
-
-// Also update the next draw time
-getNextDrawTime();
-
-// And finally, add this to the connectWalletAndJoin function after getting the participant count:
-
-// Get participant count while we're connected
-getParticipantCount();
-// Also update the draw time
-getNextDrawTime();
-        
-        // Start the timer
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set up button handlers
-            joinButton.addEventListener('click', connectWalletAndJoin);
-            refreshCountButton.addEventListener('click', connectAndShowCount);
-            
-            // Check if MetaMask is already connected
-            checkWalletConnection();
-        });
-        
-        // Check if wallet is already connected
-        async function checkWalletConnection() {
-            if (window.ethereum) {
-                try {
-                    // Check if we're already connected
-                    const accounts = await window.ethereum.request({ 
-                        method: 'eth_accounts' 
-                    });
-                    
-                    if (accounts && accounts.length > 0) {
-                        // We have a connected account, get the participant count
-                        getParticipantCount();
-                    }
-                } catch (error) {
-                    console.error("Error checking wallet connection:", error);
-                }
-            }
-        }
-        
-        // Connect wallet and show participant count
-        async function connectAndShowCount() {
-            if (!window.ethereum) {
-                participantCount.textContent = "Please install MetaMask first";
-                return;
-            }
-            
-            try {
-                // Request wallet connection
-                const accounts = await window.ethereum.request({ 
-                    method: 'eth_requestAccounts' 
-                });
-                
-                if (accounts.length > 0) {
-                    participantCount.textContent = "Loading count...";
-                    
-                    // Check network
-                    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-                    if (parseInt(chainId, 16) !== 73405) {
-                        try {
-                            await switchToSupernova();
-                        } catch (error) {
-                            participantCount.textContent = "Please switch to Supernova network";
-                            return;
-                        }
-                    }
-                    
-                    // Get participant count
-                    getParticipantCount();
-                }
-            } catch (error) {
-                console.error("Error connecting wallet:", error);
-                participantCount.textContent = "Error connecting wallet";
-            }
-        }
-        
-        // Get participant count
-        async function getParticipantCount() {
+    // Function to get the next draw time from the contract
+    async function getNextDrawTime() {
+        if (window.ethereum) {
             try {
                 const web3 = new Web3(window.ethereum);
                 const contract = new web3.eth.Contract([
                     {
                         "inputs": [],
-                        "name": "getParticipantCount",
+                        "name": "nextDrawTime",
                         "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
                         "stateMutability": "view",
                         "type": "function"
                     }
                 ], contractAddress);
                 
-                const count = await contract.methods.getParticipantCount().call();
-                participantCount.textContent = count;
-                console.log("Current participants:", count);
-            } catch (error) {
-                console.error("Error getting participant count:", error);
-                participantCount.textContent = "Error loading count";
-            }
-        }
-        
-        // Update countdown timer
-        function updateCountdown() {
-            const now = new Date();
-            const timeLeft = drawDate - now;
-            
-            if (timeLeft <= 0) {
-                countdown.textContent = "Draw is in progress!";
-                return;
-            }
-            
-            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-            
-            countdown.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
-        
-        // Switch to Supernova network
-        async function switchToSupernova() {
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x11EAD' }], // 73405 in hex
-                });
-                return true;
-            } catch (switchError) {
-                // This error code indicates that the chain has not been added to MetaMask
-                if (switchError.code === 4902) {
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_addEthereumChain',
-                            params: [
-                                {
-                                    chainId: '0x11EAD',
-                                    chainName: 'Zenon Supernova',
-                                    nativeCurrency: { name: 'Zenon', symbol: 'xZNN', decimals: 18 },
-                                    rpcUrls: ['https://rpc.novascan.io'],
-                                    blockExplorerUrls: ['https://novascan.io'],
-                                },
-                            ],
-                        });
-                        return true;
-                    } catch (addError) {
-                        console.error("Error adding network:", addError);
-                        throw addError;
-                    }
+                const timestamp = await contract.methods.nextDrawTime().call();
+                const nextDrawDate = new Date(timestamp * 1000); // Convert from seconds to milliseconds
+                
+                console.log("Next draw time from contract:", nextDrawDate);
+                
+                // Only update if it's in the future
+                if (nextDrawDate > new Date()) {
+                    drawDate = nextDrawDate;
+                    // Update the countdown immediately
+                    updateCountdown();
                 }
-                throw switchError;
+            } catch (error) {
+                console.error("Error getting next draw time:", error);
             }
         }
+    }
+    
+    // Start the timer
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // Try to get draw time periodically
+    setInterval(getNextDrawTime, 60000); // Check every minute
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        // Set up button handlers
+        joinButton.addEventListener('click', connectWalletAndJoin);
+        refreshCountButton.addEventListener('click', connectAndShowCount);
         
-        // Connect wallet and join lottery
-        async function connectWalletAndJoin() {
-            if (!window.ethereum) {
-                showStatus("Please install MetaMask to participate", "error");
-                return;
-            }
-            
+        // Check if MetaMask is already connected
+        checkWalletConnection();
+        
+        // Get the next draw time from the contract (no wallet needed)
+        getNextDrawTime();
+    });
+    
+    // Check if wallet is already connected
+    async function checkWalletConnection() {
+        if (window.ethereum) {
             try {
-                // Request account access
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const account = accounts[0];
+                // Check if we're already connected
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_accounts' 
+                });
+                
+                if (accounts && accounts.length > 0) {
+                    // We have a connected account, get the participant count
+                    getParticipantCount();
+                }
+            } catch (error) {
+                console.error("Error checking wallet connection:", error);
+            }
+        }
+    }
+    
+    // Connect wallet and show participant count
+    async function connectAndShowCount() {
+        if (!window.ethereum) {
+            participantCount.textContent = "Please install MetaMask first";
+            return;
+        }
+        
+        try {
+            // Request wallet connection
+            const accounts = await window.ethereum.request({ 
+                method: 'eth_requestAccounts' 
+            });
+            
+            if (accounts.length > 0) {
+                participantCount.textContent = "Loading count...";
                 
                 // Check network
                 const chainId = await window.ethereum.request({ method: 'eth_chainId' });
                 if (parseInt(chainId, 16) !== 73405) {
-                    showStatus("Switching to Supernova network...", "info");
                     try {
                         await switchToSupernova();
                     } catch (error) {
-                        showStatus("Please switch to Zenon Supernova network (Chain ID: 73405)", "error");
+                        participantCount.textContent = "Please switch to Supernova network";
                         return;
                     }
                 }
                 
-                // Get participant count while we're connected
+                // Get participant count
                 getParticipantCount();
                 
-                showStatus("Joining lottery...", "info");
-                
-                // Call enter function
-                try {
-                    const web3 = new Web3(window.ethereum);
-                    const contract = new web3.eth.Contract([
-                        {
-                            "inputs": [],
-                            "name": "enter",
-                            "outputs": [],
-                            "stateMutability": "payable",
-                            "type": "function"
-                        }
-                    ], contractAddress);
-                    
-                    const result = await contract.methods.enter().send({
-                        from: account,
-                        value: "0"
-                    });
-                    
-                    console.log("Transaction result:", result);
-                    
-                    showStatus("You've joined the lottery! Good luck!", "success");
-                    joinButton.textContent = "You've Joined!";
-                    joinButton.disabled = true;
-                    
-                    // Update participant count after successful entry
-                    setTimeout(getParticipantCount, 5000);
-                } catch (txError) {
-                    console.error("Transaction error:", txError);
-                    
-                    // Try with raw transaction as fallback
-                    if (txError.message && txError.message.includes("Error")) {
-                        try {
-                            const enterFunctionSignature = "0xe97dcb62"; // Function signature for enter()
-                            
-                            const tx = await window.ethereum.request({
-                                method: 'eth_sendTransaction',
-                                params: [{
-                                    from: account,
-                                    to: contractAddress,
-                                    value: '0x0',
-                                    data: enterFunctionSignature
-                                }]
-                            });
-                            
-                            showStatus("Transaction sent! You've joined the lottery.", "success");
-                            joinButton.textContent = "You've Joined!";
-                            joinButton.disabled = true;
-                            
-                            // Update participant count after successful entry
-                            setTimeout(getParticipantCount, 5000);
-                        } catch (rawTxError) {
-                            handleTransactionError(rawTxError);
-                        }
-                    } else {
-                        handleTransactionError(txError);
-                    }
+                // Also update the next draw time
+                getNextDrawTime();
+            }
+        } catch (error) {
+            console.error("Error connecting wallet:", error);
+            participantCount.textContent = "Error connecting wallet";
+        }
+    }
+    
+    // Get participant count
+    async function getParticipantCount() {
+        try {
+            const web3 = new Web3(window.ethereum);
+            const contract = new web3.eth.Contract([
+                {
+                    "inputs": [],
+                    "name": "getParticipantCount",
+                    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                    "stateMutability": "view",
+                    "type": "function"
                 }
+            ], contractAddress);
+            
+            const count = await contract.methods.getParticipantCount().call();
+            participantCount.textContent = count;
+            console.log("Current participants:", count);
+        } catch (error) {
+            console.error("Error getting participant count:", error);
+            participantCount.textContent = "Error loading count";
+        }
+    }
+    
+    // Update countdown timer
+    function updateCountdown() {
+        const now = new Date();
+        const timeLeft = drawDate - now;
+        
+        if (timeLeft <= 0) {
+            countdown.textContent = "Draw is in progress!";
+            return;
+        }
+        
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        
+        countdown.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+    
+    // Switch to Supernova network
+    async function switchToSupernova() {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0x11EAD' }], // 73405 in hex
+            });
+            return true;
+        } catch (switchError) {
+            // This error code indicates that the chain has not been added to MetaMask
+            if (switchError.code === 4902) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [
+                            {
+                                chainId: '0x11EAD',
+                                chainName: 'Zenon Supernova',
+                                nativeCurrency: { name: 'Zenon', symbol: 'xZNN', decimals: 18 },
+                                rpcUrls: ['https://rpc.novascan.io'],
+                                blockExplorerUrls: ['https://novascan.io'],
+                            },
+                        ],
+                    });
+                    return true;
+                } catch (addError) {
+                    console.error("Error adding network:", addError);
+                    throw addError;
+                }
+            }
+            throw switchError;
+        }
+    }
+    
+    // Connect wallet and join lottery
+    async function connectWalletAndJoin() {
+        if (!window.ethereum) {
+            showStatus("Please install MetaMask to participate", "error");
+            return;
+        }
+        
+        try {
+            // Request account access
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const account = accounts[0];
+            
+            // Check network
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            if (parseInt(chainId, 16) !== 73405) {
+                showStatus("Switching to Supernova network...", "info");
+                try {
+                    await switchToSupernova();
+                } catch (error) {
+                    showStatus("Please switch to Zenon Supernova network (Chain ID: 73405)", "error");
+                    return;
+                }
+            }
+            
+            // Get participant count while we're connected
+            getParticipantCount();
+            
+            // Also update the draw time
+            getNextDrawTime();
+            
+            showStatus("Joining lottery...", "info");
+            
+            // Call enter function
+            try {
+                const web3 = new Web3(window.ethereum);
+                const contract = new web3.eth.Contract([
+                    {
+                        "inputs": [],
+                        "name": "enter",
+                        "outputs": [],
+                        "stateMutability": "payable",
+                        "type": "function"
+                    }
+                ], contractAddress);
                 
-            } catch (error) {
-                console.error("Wallet connection error:", error);
-                handleTransactionError(error);
+                const result = await contract.methods.enter().send({
+                    from: account,
+                    value: "0"
+                });
+                
+                console.log("Transaction result:", result);
+                
+                showStatus("You've joined the lottery! Good luck!", "success");
+                joinButton.textContent = "You've Joined!";
+                joinButton.disabled = true;
+                
+                // Update participant count after successful entry
+                setTimeout(getParticipantCount, 5000);
+            } catch (txError) {
+                console.error("Transaction error:", txError);
+                
+                // Try with raw transaction as fallback
+                if (txError.message && txError.message.includes("Error")) {
+                    try {
+                        const enterFunctionSignature = "0xe97dcb62"; // Function signature for enter()
+                        
+                        const tx = await window.ethereum.request({
+                            method: 'eth_sendTransaction',
+                            params: [{
+                                from: account,
+                                to: contractAddress,
+                                value: '0x0',
+                                data: enterFunctionSignature
+                            }]
+                        });
+                        
+                        showStatus("Transaction sent! You've joined the lottery.", "success");
+                        joinButton.textContent = "You've Joined!";
+                        joinButton.disabled = true;
+                        
+                        // Update participant count after successful entry
+                        setTimeout(getParticipantCount, 5000);
+                    } catch (rawTxError) {
+                        handleTransactionError(rawTxError);
+                    }
+                } else {
+                    handleTransactionError(txError);
+                }
             }
-        }
-        
-        // Handle transaction errors
-        function handleTransactionError(error) {
-            console.error("Transaction error:", error);
             
-            if (error.code === 4001) {
-                showStatus("Transaction rejected by user", "error");
-            } else if (error.message && error.message.includes("Competition not active")) {
-                showStatus("Error: Competition is not currently active", "error");
-            } else if (error.message && error.message.includes("Draw already ended")) {
-                showStatus("Error: Draw period has already ended", "error");
-            } else {
-                showStatus("Error: " + (error.message || "Transaction failed"), "error");
-            }
+        } catch (error) {
+            console.error("Wallet connection error:", error);
+            handleTransactionError(error);
         }
+    }
+    
+    // Handle transaction errors
+    function handleTransactionError(error) {
+        console.error("Transaction error:", error);
         
-        // Show status message
-        function showStatus(message, type) {
-            statusBox.textContent = message;
-            statusBox.style.display = "block";
-            
-            // Set color based on type
-            if (type === "error") {
-                statusBox.style.backgroundColor = "rgba(255, 0, 0, 0.1)";
-                statusBox.style.color = "#ff4444";
-                statusBox.style.border = "1px solid #ff4444";
-            } else if (type === "success") {
-                statusBox.style.backgroundColor = "rgba(0, 255, 0, 0.1)";
-                statusBox.style.color = "#00ff88";
-                statusBox.style.border = "1px solid #00ff88";
-            } else {
-                statusBox.style.backgroundColor = "rgba(0, 255, 255, 0.1)";
-                statusBox.style.color = "#00ffff";
-                statusBox.style.border = "1px solid #00ffff";
-            }
+        if (error.code === 4001) {
+            showStatus("Transaction rejected by user", "error");
+        } else if (error.message && error.message.includes("Competition not active")) {
+            showStatus("Error: Competition is not currently active", "error");
+        } else if (error.message && error.message.includes("Draw already ended")) {
+            showStatus("Error: Draw period has already ended", "error");
+        } else {
+            showStatus("Error: " + (error.message || "Transaction failed"), "error");
         }
-    </script>
+    }
+    
+    // Show status message
+    function showStatus(message, type) {
+        statusBox.textContent = message;
+        statusBox.style.display = "block";
+        
+        // Set color based on type
+        if (type === "error") {
+            statusBox.style.backgroundColor = "rgba(255, 0, 0, 0.1)";
+            statusBox.style.color = "#ff4444";
+            statusBox.style.border = "1px solid #ff4444";
+        } else if (type === "success") {
+            statusBox.style.backgroundColor = "rgba(0, 255, 0, 0.1)";
+            statusBox.style.color = "#00ff88";
+            statusBox.style.border = "1px solid #00ff88";
+        } else {
+            statusBox.style.backgroundColor = "rgba(0, 255, 255, 0.1)";
+            statusBox.style.color = "#00ffff";
+            statusBox.style.border = "1px solid #00ffff";
+        }
+    }
+</script>
 </body>
 </html>
