@@ -265,8 +265,82 @@
         // Contract configuration
         const contractAddress = "0xbF1d0383F67F454722441F7C9A4A6851D599D361";
         
-        // Fixed countdown date
-        const drawDate = new Date("April 4, 2025 16:00:00 EDT");
+// Initial placeholder until we get the real time
+let drawDate = new Date("April 4, 2025 16:00:00 EDT");
+
+// Function to get the next draw time from the contract
+async function getNextDrawTime() {
+    if (window.ethereum) {
+        try {
+            const web3 = new Web3(window.ethereum);
+            const contract = new web3.eth.Contract([
+                {
+                    "inputs": [],
+                    "name": "nextDrawTime",
+                    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ], contractAddress);
+            
+            const timestamp = await contract.methods.nextDrawTime().call();
+            const nextDrawDate = new Date(timestamp * 1000); // Convert from seconds to milliseconds
+            
+            console.log("Next draw time from contract:", nextDrawDate);
+            
+            // Only update if it's in the future
+            if (nextDrawDate > new Date()) {
+                drawDate = nextDrawDate;
+                // Update the countdown immediately
+                updateCountdown();
+            }
+        } catch (error) {
+            console.error("Error getting next draw time:", error);
+        }
+    }
+}
+
+// Then find this section in the DOMContentLoaded listener:
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Set up button handlers
+    joinButton.addEventListener('click', connectWalletAndJoin);
+    refreshCountButton.addEventListener('click', connectAndShowCount);
+    
+    // Check if MetaMask is already connected
+    checkWalletConnection();
+});
+
+// And add this call to get the next draw time (keep existing code):
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Set up button handlers
+    joinButton.addEventListener('click', connectWalletAndJoin);
+    refreshCountButton.addEventListener('click', connectAndShowCount);
+    
+    // Check if MetaMask is already connected
+    checkWalletConnection();
+    
+    // Get the next draw time from the contract (no wallet needed)
+    getNextDrawTime();
+});
+
+// Also, add this to the connectAndShowCount function, just after checking the network:
+
+// Get participant count
+getParticipantCount();
+
+// Also update the next draw time
+getNextDrawTime();
+
+// And finally, add this to the connectWalletAndJoin function after getting the participant count:
+
+// Get participant count while we're connected
+getParticipantCount();
+// Also update the draw time
+getNextDrawTime();
         
         // Start the timer
         updateCountdown();
