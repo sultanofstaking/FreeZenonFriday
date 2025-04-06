@@ -268,37 +268,48 @@
     // Initial placeholder until we get the real time
     let drawDate = new Date("April 4, 2025 16:00:00 EDT");
 
-    // Function to get the next draw time from the contract
-    async function getNextDrawTime() {
-        if (window.ethereum) {
-            try {
-                const web3 = new Web3(window.ethereum);
-                const contract = new web3.eth.Contract([
-                    {
-                        "inputs": [],
-                        "name": "nextDrawTime",
-                        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-                        "stateMutability": "view",
-                        "type": "function"
-                    }
-                ], contractAddress);
-                
-                const timestamp = await contract.methods.nextDrawTime().call();
-                const nextDrawDate = new Date(timestamp * 1000); // Convert from seconds to milliseconds
-                
-                console.log("Next draw time from contract:", nextDrawDate);
-                
-                // Only update if it's in the future
-                if (nextDrawDate > new Date()) {
-                    drawDate = nextDrawDate;
-                    // Update the countdown immediately
-                    updateCountdown();
-                }
-            } catch (error) {
-                console.error("Error getting next draw time:", error);
+// Function to get the next draw time from the contract using public RPC
+async function getNextDrawTime() {
+    try {
+        // Create a provider using the public RPC URL - no wallet needed
+        const provider = new Web3('https://rpc.novascan.io');
+        
+        // Create a contract instance using the minimal ABI we need
+        const contract = new provider.eth.Contract([
+            {
+                "inputs": [],
+                "name": "nextDrawTime",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
             }
+        ], contractAddress);
+        
+        // Call the nextDrawTime function
+        const timestamp = await contract.methods.nextDrawTime().call();
+        const nextDrawDate = new Date(timestamp * 1000); // Convert from seconds to milliseconds
+        
+        console.log("Next draw time from contract:", nextDrawDate);
+        
+        // Only update if it's in the future
+        if (nextDrawDate > new Date()) {
+            drawDate = nextDrawDate;
+            // Update the countdown immediately
+            updateCountdown();
+        } else {
+            // If draw date is in the past, show a message
+            countdown.textContent = "Draw is in progress!";
         }
+    } catch (error) {
+        console.error("Error getting next draw time:", error);
+        // Show a specific error if we can't get the time
+        countdown.textContent = "Unable to fetch next draw time";
     }
+}
+
+// Also make sure this line is in your initialization code, outside any functions:
+getNextDrawTime(); // Get the time immediately when page loads
+setInterval(getNextDrawTime, 60000); // And check every minute
     
     // Start the timer
     updateCountdown();
